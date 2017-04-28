@@ -7,13 +7,22 @@
 # python script to build the miniupnpc module under unix
 #
 # replace libminiupnpc.a by libminiupnpc.so for shared library usage
+
+import platform
 try:
       from setuptools import setup, Extension
 except ImportError:
       from distutils.core import setup, Extension
 from distutils import sysconfig
+
 sysconfig.get_config_vars()["OPT"] = ''
 sysconfig.get_config_vars()["CFLAGS"] = ''
+
+if platform.machine().startswith('arm'):
+  archive_file = 'libminiupnpc.armv7l.a'
+else:
+  archive_file = 'libminiupnpc.x86_64.a'
+
 setup(name="miniupnpc",
       version=open('VERSION').read().strip(),
       author='Thomas BERNARD',
@@ -23,6 +32,5 @@ setup(name="miniupnpc",
       description='miniUPnP client',
       ext_modules=[
          Extension(name="miniupnpc", sources=["miniupnpcmodule.c"],
-                   extra_objects=["libminiupnpc.a"])
+                   extra_objects=[archive_file])
       ])
-
